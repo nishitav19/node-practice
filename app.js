@@ -1,13 +1,17 @@
 const express = require('express')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
 
 // Express app
 const app = express()
 
-app.set('view engine', 'ejs')
+// Connect to Mongodb
+const dbURI = 'mongodb+srv://netninja:test1234@node.qnefo.mongodb.net/node?retryWrites=true&w=majority'
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then((res) => app.listen(3000))
+    .catch((err) => console.log(err))
 
-// Listen for requests
-app.listen(3000)
+app.set('view engine', 'ejs')
 
 // Middleware and static files
 app.use(express.static('public'))
