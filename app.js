@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const Blog = require('./models/blog')
 
 // Express app
 const app = express()
@@ -18,18 +19,39 @@ app.use(express.static('public'))
 
 app.use(morgan('dev'))
 
+app.get('/add-blog', (req, res) => {
+    const blog = new Blog({
+        title: 'new blog',
+        snippet: 'about the new blog',
+        body: 'more about it'
+    })
+
+    blog.save()
+        .then((result) => {
+            res.send(result)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
+
 app.get('/', (req, res) => {
-    // res.send('<p>Home Page</p>')
-     const blogs = [
-    {title: 'Yoshi finds eggs', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'Mario finds stars', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'How to defeat bowser', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-  ]
-    res.render('index', { title: 'Home', blogs })
+    res.redirect('/blogs')
 })
 
 app.get('/about', (req, res) => {
     res.render('about', { title: 'About' })
+})
+
+// Blog routes
+app.get('/blogs', (req, res) => {
+    Blog.find().sort({ createdAt: -1 })
+        .then((result) => {
+            res.render('index', { title: 'All blogs', blogs: result})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 app.get('/blogs/create', (req, res) => {
