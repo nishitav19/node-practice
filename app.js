@@ -16,24 +16,24 @@ app.set('view engine', 'ejs')
 
 // Middleware and static files
 app.use(express.static('public'))
-
+app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-app.get('/add-blog', (req, res) => {
-    const blog = new Blog({
-        title: 'new blog',
-        snippet: 'about the new blog',
-        body: 'more about it'
-    })
+// app.get('/add-blog', (req, res) => {
+//     const blog = new Blog({
+//         title: 'new blog',
+//         snippet: 'about the new blog',
+//         body: 'more about it'
+//     })
 
-    blog.save()
-        .then((result) => {
-            res.send(result)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-})
+//     blog.save()
+//         .then((result) => {
+//             res.send(result)
+//         })
+//         .catch((err) => {
+//             console.log(err)
+//         })
+// })
 
 app.get('/', (req, res) => {
     res.redirect('/blogs')
@@ -48,6 +48,18 @@ app.get('/blogs', (req, res) => {
     Blog.find().sort({ createdAt: -1 })
         .then((result) => {
             res.render('index', { title: 'All blogs', blogs: result})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
+
+app.post('/blogs', (req, res) => {
+    const blog = new Blog(req.body)
+
+    blog.save()
+        .then((result) => {
+            res.redirect('/blogs')
         })
         .catch((err) => {
             console.log(err)
